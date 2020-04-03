@@ -2,14 +2,23 @@
 
 module JsonApiPreloader
   class AssociationsBuilder
-    delegate :models, to: ModelsPreloader
+    class << self
+      def associations
+        @associations ||= ModelsPreloader.models.map do |model_name|
+          {
+            associations: associations_for(model_name),
+            name: model_name
+          }
+        end
+      end
 
-    def call
-      models.map do |model_name|
-        {
-          associations: model_name.constantize.reflect_on_all_associations.map { |ac| { ac.name => ac.klass.name } },
-          name: model_name
-        }
+      private
+
+      def associations_for(model_name)
+        model = model_name.safe_constantize
+        return [] unless model
+
+        model.reflect_on_all_associations.map { |ac| { ac.name => ac.klass.name } }
       end
     end
   end

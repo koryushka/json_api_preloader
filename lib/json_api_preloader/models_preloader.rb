@@ -5,7 +5,7 @@ module JsonApiPreloader
     class << self
       def models
         @models ||= begin
-          load_models! unless eager_loaded?
+          load_models! if load_required?
 
           model_names
         end
@@ -13,16 +13,22 @@ module JsonApiPreloader
 
       private
 
-      def eager_loaded?
-        Rails.application.config.eager_load
+      def load_required?
+        return !Rails.application.config.eager_load if defined?(Rails)
+
+        true
       end
 
       def load_models!
-        Dir[Rails.root.join('app/models/**/*.rb')].sort.each { |f| require f }
+        Dir[models_folder].each { |f| require f }
+      end
+
+      def models_folder
+        JsonApiPreloader.configuration.models_folder
       end
 
       def model_names
-        ApplicationRecord.descendants.collect(&:name)
+        ActiveRecord::Base.descendants.collect(&:name)
       end
     end
   end

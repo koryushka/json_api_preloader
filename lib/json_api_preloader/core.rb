@@ -2,9 +2,10 @@
 
 module JsonApiPreloader
   module Core
-    extend ActiveSupport::Concern
-
-    class_methods do
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+    module ClassMethods
       def preload_from_params_for(model_name)
         class_attribute :preloader_configuration
 
@@ -30,8 +31,10 @@ module JsonApiPreloader
       association = ary.shift
       return unless association
 
-      new_parent = AssociationsChecker.new(parent, association).call
-      return unless new_parent
+      if preload_models?
+        new_parent = AssociationsChecker.new(parent, association).call
+        return unless new_parent
+      end
 
       modify_params(hsh[association], ary, new_parent)
     end
@@ -43,6 +46,10 @@ module JsonApiPreloader
         modify_params(hash, array, parent)
       end
       result
+    end
+
+    def preload_models?
+      @preload_models ||= ModelsPreloadChecker.preload_models?
     end
   end
 end

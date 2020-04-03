@@ -14,7 +14,7 @@ module JsonApiPreloader
     end
 
     def self.associations
-      @associations ||= AssociationsBuilder.new.call
+      @associations ||= AssociationsBuilder.associations
     end
 
     private
