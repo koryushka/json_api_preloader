@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name      = 'json_api_preloader'
-  s.version   = '0.0.1'
+  s.version   = '0.0.2'
   s.authors   = ['Kiryl Karetnikau']
   s.license   = 'MIT'
   s.email     = 'kiryl.karetnikau@gmail.com'
