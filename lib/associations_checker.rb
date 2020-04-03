@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AssociationsChecker
   def initialize(parent, association)
     @parent = parent
@@ -17,7 +19,7 @@ class AssociationsChecker
   def associations
     @associations ||= models.map do |model_name|
       {
-        associations: model_name.constantize.reflect_on_all_associations.map{|ac| { ac.name => ac.klass.name}},
+        associations: model_name.constantize.reflect_on_all_associations.map { |ac| { ac.name => ac.klass.name } },
         name: model_name
       }
     end

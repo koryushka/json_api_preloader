@@ -28,7 +28,7 @@ module JsonApiPreloader
   def modify_params(hsh, ary, parent)
     association = ary.shift
     return unless association
-    
+
     new_parent = AssociationsChecker.new(parent, association).call
     return unless new_parent
 

@@ -1,0 +1,11 @@
+Style/Documentation:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 120
+
+Naming/VariableNumber:
+  EnforcedStyle: snake_case
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
