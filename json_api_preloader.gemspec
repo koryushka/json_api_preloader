@@ -9,4 +9,6 @@ Gem::Specification.new do |s|
   s.homepage  = 'https://github.com/koryushka/json_api_preloader'
   s.summary   = 'Preloads associations based on request param `included`'
   s.files     = `git ls-files -z`.split("\x0")
+
+  s.add_development_dependency 'rspec', '~> 3.9.0'
 end

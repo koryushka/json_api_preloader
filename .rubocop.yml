@@ -4,6 +4,10 @@ Style/Documentation:
 Layout/LineLength:
   Max: 120
 
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'  
+
 Naming/VariableNumber:
   EnforcedStyle: snake_case
 

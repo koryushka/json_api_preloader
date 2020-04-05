@@ -19,11 +19,11 @@ module JsonApiPreloader
 
     def preloaded
       included = params[:include]
-      return {} unless included.presence
+      return {} if included.nil? || included.empty?
 
       nested_resources(
         included: included.split(','),
-        parent: preloader_configuration[:name]
+        parent: parent_model
       )
     end
 
@@ -31,7 +31,7 @@ module JsonApiPreloader
       association = ary.shift
       return unless association
 
-      if preload_models?
+      if parent
         new_parent = AssociationsChecker.new(parent, association).call
         return unless new_parent
       end
@@ -50,6 +50,12 @@ module JsonApiPreloader
 
     def preload_models?
       @preload_models ||= ModelsPreloadChecker.preload_models?
+    end
+
+    def parent_model
+      return unless preload_models?
+
+      preloader_configuration[:name]
     end
   end
 end
