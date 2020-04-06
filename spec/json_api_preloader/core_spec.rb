@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
+require 'byebug'
 RSpec.describe JsonApiPreloader::Core do
-  describe '.preload' do
+  describe '.preloaded_query' do
     let(:object) { Object.new }
-
     before do
       def object.controller_name
         'some_name'
@@ -23,7 +23,7 @@ RSpec.describe JsonApiPreloader::Core do
         end
 
         it 'returns proper object' do
-          expect(object.send(:preloaded)).to eq(collection_to_include: {})
+          expect(object.send(:preloaded_query)).to eq(collection_to_include: {})
         end
       end
 
@@ -34,7 +34,7 @@ RSpec.describe JsonApiPreloader::Core do
           end
         end
         it 'returns proper object' do
-          expect(object.send(:preloaded)).to eq({})
+          expect(object.send(:preloaded_query)).to eq({})
         end
       end
 
@@ -45,7 +45,7 @@ RSpec.describe JsonApiPreloader::Core do
           end
         end
         it 'returns proper object' do
-          expect(object.send(:preloaded)).to eq({})
+          expect(object.send(:preloaded_query)).to eq({})
         end
       end
 
@@ -56,7 +56,7 @@ RSpec.describe JsonApiPreloader::Core do
           end
         end
         it 'returns proper object' do
-          expect(object.send(:preloaded)).to eq({})
+          expect(object.send(:preloaded_query)).to eq({})
         end
       end
 
@@ -67,7 +67,7 @@ RSpec.describe JsonApiPreloader::Core do
           end
         end
         it 'returns proper object' do
-          expect(object.send(:preloaded)).to eq(collection: {}, second_collection: {}, third_collection: {})
+          expect(object.send(:preloaded_query)).to eq(collection: {}, second_collection: {}, third_collection: {})
         end
       end
 
@@ -81,7 +81,7 @@ RSpec.describe JsonApiPreloader::Core do
         end
 
         it 'returns proper object' do
-          expect(object.send(:preloaded))
+          expect(object.send(:preloaded_query))
             .to eq(
               first_level_2: { second_level: {}, second_level_2: {} }, first_level_3: { second_level: {} },
               first_level: {}
@@ -100,12 +100,88 @@ RSpec.describe JsonApiPreloader::Core do
         end
 
         it 'returns proper object' do
-          expect(object.send(:preloaded))
+          expect(object.send(:preloaded_query))
             .to eq(
               first_level: {}, first_level_4: { second_level: {}, second_level_2: { third_level: {} } },
               first_level_2: {}, first_level_3: {}
             )
         end
+      end
+    end
+  end
+
+  describe '#setup_query_builder' do
+    before { Object.include(described_class) }
+
+    context 'single setup per class' do
+      subject { Object.setup_query_builder(model_name, action: action) }
+
+      context 'when model name and action are nil' do
+        let(:model_name) { nil }
+        let(:action) { nil }
+
+        it { is_expected.to eq([{ model_name: 'Object', action: :index }]) }
+      end
+
+      context 'when model is set' do
+        before do
+          class TestModel; end
+        end
+        let(:model_name) { 'TestModel' }
+        let(:action) { nil }
+
+        it { is_expected.to eq([{ model_name: 'TestModel', action: :index }]) }
+      end
+
+      context 'when action is set' do
+        let(:model_name) { nil }
+        let(:action) { :custom_action }
+
+        it { is_expected.to eq([{ model_name: 'Object', action: :custom_action }]) }
+      end
+
+      context 'when model and action are set' do
+        before do
+          class TestModel; end
+        end
+        let(:model_name) { 'TestModel' }
+        let(:action) { :custom_action }
+
+        it { is_expected.to eq([{ model_name: 'TestModel', action: :custom_action }]) }
+      end
+
+      context 'when model does not exist' do
+        let(:model_name) { 'UnexistentModel' }
+        let(:action) { :custom_action }
+
+        it 'raises error' do
+          expect { subject }.to raise_error(NameError, "uninitialized constant #{model_name}")
+        end
+      end
+    end
+
+    context 'multiple setups per class' do
+      subject do
+        Object.setup_query_builder(model_name, action: action)
+        Object.setup_query_builder(model_name_2, action: action_2)
+      end
+
+      context 'when model name and action are set' do
+        before do
+          class TestModel end
+          class TestModel2 end
+        end
+
+        let(:model_name) { 'TestModel' }
+        let(:action) { :custom_action }
+        let(:model_name_2) { 'TestModel2' }
+        let(:action_2) { :custom_action_2 }
+
+        expected_setup = [
+          { model_name: 'TestModel', action: :custom_action },
+          { model_name: 'TestModel2', action: :custom_action_2 }
+        ]
+        it { is_expected.to match_array(expected_setup) }
       end
     end
   end

@@ -1,23 +1,30 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext'
 module JsonApiPreloader
   module Core
     def self.included(base)
       base.extend(ClassMethods)
+      base.class_attribute(:builder_configuration)
     end
     module ClassMethods
-      def preload_from_params_for(model_name)
-        class_attribute :preloader_configuration
+      def setup_query_builder(model_name = nil, action: nil)
+        self.builder_configuration ||= []
 
-        self.preloader_configuration = {
-          name: model_name.constantize.name
+        self.builder_configuration << {
+          model_name: model_name ? model_name.constantize.name : based_on_controller_name,
+          action: action&.to_sym || :index
         }
+      end
+
+      def based_on_controller_name
+        name.demodulize.gsub('Controller', '').singularize.constantize.name
       end
     end
 
     private
 
-    def preloaded
+    def preloaded_query
       included = params[:include]
       return {} if included.nil? || included.empty?
 
@@ -55,7 +62,10 @@ module JsonApiPreloader
     def parent_model
       return unless preload_models?
 
-      preloader_configuration[:name]
+      config = builder_configuration.detect { |conf| conf[:action] == action_name.to_sym }
+      return unless config
+
+      config[:model_name]
     end
   end
 end

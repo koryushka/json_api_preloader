@@ -11,4 +11,5 @@ Gem::Specification.new do |s|
   s.files     = `git ls-files -z`.split("\x0")
 
   s.add_development_dependency 'rspec', '~> 3.9.0'
+  s.add_dependency 'activesupport', '~> 5.0', '>= 5.0.0.1'
 end
