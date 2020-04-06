@@ -57,7 +57,7 @@ class UsersController < ApplicationController
 
   def index
     users = User.includes(preloaded_query) 
-    # preloaded will be `{ posts: { images: {}, comments: {} } }`
+    # preloaded_query will be `{ posts: { images: {}, comments: {} } }`
   end
 end
 ```
@@ -78,9 +78,9 @@ class UsersController < ApplicationController
   setup_query_builder
 
   def index
-    users = User.includes(preloaded) 
-    # By default `preloaded` will be `{ posts: { images: {}, comments: {} } }`.
-    # If `check_associations` is set to `false` `preloaded` will be:
+    users = User.includes(preloaded_query) 
+    # By default `preloaded_query` will be `{ posts: { images: {}, comments: {} } }`.
+    # If `check_associations` is set to `false` `preloaded_query` will be:
     # { posts: { images: {}, comments: {}, unexistent: {} }, unexistent: {} }
     # this might help client to understand the usage of endpoint, because error will be returned.
   end
