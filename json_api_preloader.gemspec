@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-lib = File.expand_path('../lib', __FILE__)
+
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'json_api_preloader/version'
 
@@ -14,5 +15,5 @@ Gem::Specification.new do |s|
   s.files     = `git ls-files -z`.split("\x0")
 
   s.add_development_dependency 'rspec', '~> 3.9.0'
-  s.add_dependency 'activesupport', '~> 5.0', '>= 5.0.0.1'
+  s.add_dependency 'activesupport', '>= 4.2'
 end
