@@ -24,8 +24,6 @@ Or install it yourself as:
 
 ## Usage
 
-
-
 Let's say you have models:
 
 ```ruby
@@ -55,13 +53,19 @@ And you're querying `index` action of `users_controller` as following:
 ```ruby
 class UsersController < ApplicationController
   include JsonApiPreloader::Core
-  preload_from_params_for "User"
+  setup_query_builder
 
   def index
     users = User.includes(preloaded) 
     # preloaded will be `{ posts: { images: {}, comments: {} } }`
   end
 end
+```
+
+You can specify parent model per action:
+
+```ruby
+  setup_query_builder "SomeModel", action: :custom_action
 ```
 
 or with unexistent association:
@@ -71,7 +75,7 @@ or with unexistent association:
 ```ruby
 class UsersController < ApplicationController
   include JsonApiPreloader::Core
-  preload_from_params_for "User"
+  setup_query_builder
 
   def index
     users = User.includes(preloaded) 
