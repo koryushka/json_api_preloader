@@ -6,6 +6,7 @@ require 'json_api_preloader/models_preload_checker'
 require 'json_api_preloader/associations_checker'
 require 'json_api_preloader/associations_builder'
 require 'json_api_preloader/configuration'
+require 'json_api_preloader/version'
 
 module JsonApiPreloader
   class << self

@@ -1,8 +1,11 @@
 # frozen_string_literal: true
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'json_api_preloader/version'
 
 Gem::Specification.new do |s|
   s.name      = 'json_api_preloader'
-  s.version   = '0.0.2'
+  s.version   = JsonApiPreloader::VERSION
   s.authors   = ['Kiryl Karetnikau']
   s.license   = 'MIT'
   s.email     = 'kiryl.karetnikau@gmail.com'

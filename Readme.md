@@ -56,7 +56,7 @@ class UsersController < ApplicationController
   setup_query_builder
 
   def index
-    users = User.includes(preloaded) 
+    users = User.includes(preloaded_query) 
     # preloaded will be `{ posts: { images: {}, comments: {} } }`
   end
 end
