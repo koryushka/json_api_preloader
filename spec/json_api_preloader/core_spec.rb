@@ -5,7 +5,8 @@ RSpec.describe JsonApiPreloader::Core do
   describe '.preloaded_query' do
     let(:object) { Object.new }
     before do
-      object.extend(described_class)
+      Object.include(described_class)
+      # object.extend(described_class)
 
       allow(JsonApiPreloader::ModelsPreloadChecker).to receive(:preload_models?).and_return(preload_models)
     end
@@ -47,7 +48,7 @@ RSpec.describe JsonApiPreloader::Core do
           let(:first_level_double_parent_2) { 'SomeModel' }
 
           it 'returns proper object' do
-            expect(object.send(:preloaded)).to eq(first_association: {}, second_association: {})
+            expect(object.send(:preloaded_query)).to eq(first_association: {}, second_association: {})
           end
         end
 
@@ -55,47 +56,48 @@ RSpec.describe JsonApiPreloader::Core do
           let(:first_level_double_parent) { nil }
           let(:first_level_double_parent_2) { 'SomeModel' }
           it 'returns proper object' do
-            expect(object.send(:preloaded)).to eq(second_association: {})
+            expect(object.send(:preloaded_query)).to eq(second_association: {})
           end
         end
       end
 
-      # context 'two levels of nesting' do
-      #   let(:first_level_association) { 'first_level' }
-      #   let(:first_level_association_2) { 'first_level_2' }
-      #   let(:first_level_double_parent) { 'FirstParentModel' }
-      #   let(:second_level_double_parent) { 'SecondParentModel' }
-      #   let(:first_level_double_parent_2) { 'SomeParent' }
+      context 'two levels of nesting' do
+        let(:first_level_association) { :first_level }
+        let(:first_level_association_2) { :first_level_2 }
+        let(:second_level_association) { :second_level }
 
-      #   before do
-      #     def object.params
-      #       {
-      #         include: 'first_level.second_level,first_level_2'
-      #       }
-      #     end
+        before do
+          def object.params
+            {
+              include: 'first_level.second_level,first_level_2'
+            }
+          end
+          allow(JsonApiPreloader::AssociationsChecker)
+            .to receive(:new).with(first_level_double_parent, first_level_association).and_return(second_level_double)
+          allow(JsonApiPreloader::AssociationsChecker)
+            .to receive(:new).with(first_level_double_parent, second_level_association).and_return(second_level_double)
+        end
 
-      #     allow(JsonApiPreloader::AssociationsChecker)
-      #       .to receive(:new).with(first_level_double_parent, first_level_association).and_return(second_level_double)
+        context 'when associations exist' do
+          let(:first_level_double_parent) { 'FirstParentModel' }
+          let(:second_level_double_parent) { 'SecondParentModel' }
+          let(:first_level_double_parent_2) { 'SomeParent' }
 
-      #     # allow(JsonApiPreloader::AssociationsChecker)
-      #     #   .to receive(:new).with(parent, first_level_association).and_return(first_level_double)
-      #     # allow(double).to receive(:call).and_return(first_parent)
+          it 'returns proper object' do
+            expect(object.send(:preloaded_query)).to eq(first_level: { second_level: {} }, first_level_2: {})
+          end
+        end
 
-      #     # allow(JsonApiPreloader::AssociationsChecker)
-      #     #   .to receive(:new).with(first_parent, second_association).and_return(first_level_double_2)
-      #     # allow(second_double).to receive(:call).and_return(second_parent)
-      #   end
+        context 'when does not associations exist' do
+          let(:first_level_double_parent) { 'FirstParentModel' }
+          let(:second_level_double_parent) { nil }
+          let(:first_level_double_parent_2) { 'SomeParent' }
 
-      #   context 'when associations exist' do
-      #     let(:double_parent) { 'SomeModel' }
-      #     let(:second_double_parent) { 'SomeModel' }
-
-      #     it 'returns proper object' do
-      #       byebug
-      #       expect(object.send(:preloaded)).to eq(first_level: { second_level: {} }, first_level_2: {})
-      #     end
-      #   end
-      # end
+          it 'returns proper object' do
+            expect(object.send(:preloaded_query)).to eq(first_level: {}, first_level_2: {})
+          end
+        end
+      end
     end
 
     context 'when models are not preloaded' do

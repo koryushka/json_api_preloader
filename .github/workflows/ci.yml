@@ -26,9 +26,9 @@ jobs:
         run: make bundle   
 
       - name: Run linter
-        id: run-lint
-        run: make lint
+        id: run-linter
+        run: make linter
 
       - name: Run tests
         id: run-tests
-        run: make  test 
+        run: make test 

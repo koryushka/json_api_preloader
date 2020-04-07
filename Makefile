@@ -1,10 +1,10 @@
 usage:
 	@echo "Available targets:"
-	@echo "  * lint                - Runs rubocop"
+	@echo "  * linter              - Runs rubocop"
 	@echo "  * test                - Runs tests"
 	@echo "  * bundle              - Installs gems"
 
-lint: ## Runs rubocop
+linter: ## Runs rubocop
 	bundle exec rubocop
 test: ## Runs tests
 	bundle exec rspec	
