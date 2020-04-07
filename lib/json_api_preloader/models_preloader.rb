@@ -20,7 +20,7 @@ module JsonApiPreloader
       end
 
       def load_models!
-        Dir[models_folder].each { |f| require f }
+        Dir[models_folder].sort.each { |f| require f }
       end
 
       def models_folder
